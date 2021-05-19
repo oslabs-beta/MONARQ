@@ -1,10 +1,8 @@
 // note: was not able to use the import syntax, but the const + require language did work
 // import { graphql, buildSchema, makeExecutableSchema } from 'graphql'
-const graphql = require('graphql');
-const path = require('path');
-const fs = require('fs');
-import schema from '../graphql/schema';
-import { manifest } from './dummyManifestAndQueryObj.js';
+// const graphql = require('graphql');
+// const path = require('path');
+// const fs = require('fs');
 
 // user will designate REST endpoints, but assumption is that a GQL operation already exists for each one
 // error handling - if an invalid/non-existent operation is specified
@@ -235,8 +233,8 @@ function varStrBuild(varObj) {
 
 
 
-export default queryObject;
-
+//export default queryObject;
+module.exports = queryObject;
 
 
 
