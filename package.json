@@ -1,0 +1,34 @@
+{
+  "name": "monarq",
+  "version": "1.0.0",
+  "description": "Rest API to GraphQL queries",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oslabs-beta/MONARQ.git"
+  },
+  "author": "Team MONARQ",
+  "email": "monarq.team@gmail.com",
+  "contributors": [
+    "Peter Baniuszewicz",
+    "Amy Chen",
+    "Tyler Kneidl",
+    "Helen Regula"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "api",
+    "rest",
+    "restful",
+    "graphql",
+    "monarq",
+    "rest-to-graphql"
+  ],
+  "bugs": {
+    "url": "https://github.com/oslabs-beta/MONARQ/issues"
+  },
+  "homepage": "https://github.com/oslabs-beta/MONARQ#readme"
+}
