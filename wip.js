@@ -1,4 +1,8 @@
-
+// note: was not able to use the import syntax, but the const + require language did work
+// import { graphql, buildSchema, makeExecutableSchema } from 'graphql'
+// const graphql = require('graphql');
+// const path = require('path');
+// const fs = require('fs');
 
 // user will designate REST endpoints, but assumption is that a GQL operation already exists for each one
 // error handling - if an invalid/non-existent operation is specified
@@ -21,33 +25,21 @@ const scalarTypes = ['String', 'Int', 'ID', 'Boolean', 'Float', ...customScalars
 
 
 
-/******************************************************** 
-***** FINAL ARGS & QUERY OBJECT OUTPUT FUNCTION *********
-*********************************************************/
+/************************************************* 
+***** FINAL QUERY OBJECT OUTPUT FUNCTION *********
+**************************************************/
 
-function queryMap(manifest, schema) {
+function queryObject(manifest, schema) {
   const endPoints = manifest.endpoints;
-  const argsObj = {};
-  const queryObj = {};
+  let returnObj = {};
   for (const path in endPoints) {
     for (const action in endPoints[path]) {
       const operationName = endPoints[path][action].operation
-      
-      // generate the args object
-      const typeSchema = typeChecker(schema, operationName)[1]
-      const operationFields = typeSchema[operationName];
-      const varObj = grabArgs(schema, operationFields.args)[1];
-      argsObj[operationName] = varObj
-
-      // generate the query object
-      queryObj[operationName] = generateQuery(schema, operationName);
+      returnObj[operationName] = generateQuery(schema, operationName);
     };
   };
-  return {
-    args: argsObj,
-    queries: queryObj
-  };
-};
+  return returnObj;
+}
 
 
 
@@ -57,9 +49,18 @@ function queryMap(manifest, schema) {
 
 function generateQuery(schema, operation) {
   // first figure out whether it is a query or mutation
-  const typeInfo = typeChecker(schema, operation)
-  const operationType = typeInfo[0];
-  const typeSchema = typeInfo[1];
+  let operationType;
+  let typeSchema;
+  const querySchema = schema.getQueryType().getFields();
+  const mutationSchema = schema.getMutationType().getFields();
+  if (Object.keys(querySchema).includes(operation)) {
+    operationType = 'Query';
+    typeSchema = querySchema;
+  };
+  if (Object.keys(mutationSchema).includes(operation)) {
+    operationType = 'Mutation';
+    typeSchema = mutationSchema;
+  };
 
   // now look for all of the fields that need to be specified for the operation
   let returnFields = {};
@@ -104,6 +105,7 @@ function generateQuery(schema, operation) {
   const returnString = `${operationType.toLowerCase()} ${varsString} { ${operation} ${argsString} { ${queryString} } }`
   return returnString;
 }
+
 
 
 
@@ -252,8 +254,8 @@ function varStrBuild(varObj) {
 
 
 
-export default queryMap;
-
+//export default queryObject;
+module.exports = queryObject;
 
 
 

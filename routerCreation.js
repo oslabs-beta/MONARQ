@@ -1,7 +1,7 @@
-import express from 'express';
-import fetch from 'node-fetch';
+const express = require('express');
 
-export const routerCreation = (
+
+module.exports = routerCreation = (
     endPointObject, //from the manifest file 
     createdGQL //object that contains queries/mutations that were created with the previous function
 ) => {

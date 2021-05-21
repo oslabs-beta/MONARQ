@@ -30,5 +30,12 @@
   "bugs": {
     "url": "https://github.com/oslabs-beta/MONARQ/issues"
   },
-  "homepage": "https://github.com/oslabs-beta/MONARQ#readme"
+  "homepage": "https://github.com/oslabs-beta/MONARQ#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
+  }
 }
