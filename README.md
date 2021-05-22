@@ -20,9 +20,9 @@ import { queryMap, routerCreation } from "monarq";
 
 There are two main functions that need to be invoked within your main Express/GraphQL server file.
 
-**Step 1:** `queryMap` is a function that will take a manifest object [see below](##required-user-inputs) and schema and return an object with created query/ mutation strings. `queryMap` takes two inputs:
+**Step 1:** `queryMap` is a function that will take a manifest object [see below](#required-user-inputs) and schema and return an object with created query/ mutation strings. `queryMap` takes two inputs:
 
-- A [Manifest Object](##required-user-inputs)
+- A [Manifest Object](#required-user-inputs)
 - User's schema as a GQLSchema.
 
 Invoke this function in your main Express/GraphQL server file and save the result as a variable.
@@ -35,9 +35,9 @@ const queryMapObj = queryMap(manifest, schema);
 
 **Step 2:** `routerCreation` is a function that takes three arguments:
 
-- [Manifest Object](##required-user-inputs),
+- [Manifest Object](#required-user-inputs),
 - `queryMapObj`:(the saved value from invoking the queryMap function)
-- An Object with three keys: schema, context, and your created [`executeFn`](##required-user-inputs). This will return an express.Router instance that will have the API Paths inside the manifest object as it's routes!
+- An Object with three keys: schema, context, and your created [`executeFn`](#required-user-inputs). This will return an express.Router instance that will have the API Paths inside the manifest object as it's routes!
 
 Example:
 
