@@ -105,7 +105,7 @@ This Manifest Object is a required input into both functions. Each manifest obje
 
 For the Manifest Object Example above, it is assumed that the user has a method inside their Query or Mutation Type that corresponds to the operation string value.
 
-Example schema below:
+_Example schema below:_
 
 ```graphql
 type Query {
