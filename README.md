@@ -49,7 +49,7 @@ const routes = routerCreation(manifest, queryMapObj, {
 });
 ```
 
-**Step 3:** app.use
+**Step 3:** `app.use`
 
 Now use app.use with the first argument as the first endpoint that each REST Request will use, and the returned result of invoking routerCreation.
 
