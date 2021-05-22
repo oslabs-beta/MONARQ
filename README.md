@@ -1,4 +1,4 @@
-/Users/margaretregula/Desktop/MonarqPhoto.png
+![MonarqLogo](/Users/margaretregula/Desktop/MonarqPhoto.png)
 
 **MONARQ** sets out to easily allow our users who have an existing Express/GraphQL server accept REST requests from their clients. With a quick install of our NPM Package and invoking two functions, you will have an Express/ GraphQL Server that now accepts REST requests. Here's how it works:
 
@@ -12,8 +12,8 @@ npm install monarq
 
 Now the two main function of the package can be imported into your main Express/GraphQL server.
 
-```python
-import { queryMap, routerCreation } from 'monarq';
+```javascript
+import { queryMap, routerCreation } from "monarq";
 ```
 
 ## How To Use
@@ -29,7 +29,7 @@ Invoke this function in your main Express/GraphQL server file and save the resul
 
 Example:
 
-```python
+```javascript
 const queryMapObj = queryMap(manifest, schema);
 ```
 
@@ -41,11 +41,11 @@ const queryMapObj = queryMap(manifest, schema);
 
 Example:
 
-```python
+```javascript
 const routes = routerCreation(manifest, queryMapObj, {
-    schema,
-    context,
-    executeFn
+  schema,
+  context,
+  executeFn,
 });
 ```
 
@@ -55,8 +55,8 @@ Now use Express's `app.use` with the first argument as the first endpoint that e
 
 Example:
 
-```python
-app.use('/rest', routes);
+```javascript
+app.use("/rest", routes);
 ```
 
 That's it!
@@ -68,7 +68,7 @@ That's it!
 **STEP 1: DEFINE MANIFEST OBJECT**
 The Manifest Object should be in a specific format as follows:
 
-```python
+```javascript
 const manifest = {
     endpoints:{
         '/book/:id': {
@@ -107,7 +107,7 @@ For the Manifest Object Example above, it is assumed that the user has a method 
 
 Example schema below:
 
-```python
+```graphql
 type Query {
   books(params: QueryParams): Books!
   book(id: ID!): Book
@@ -127,7 +127,7 @@ A required input into the second function, `routerCreation`, will be the functio
 
 Example:
 
-```python
+```javascript
 async const executeFn = ({ query, variables, schema, context }) => {
     return await graphql(
         schema,
@@ -145,11 +145,11 @@ Lastly, make sure the main Express/GraphQL server file has schema and context im
 
 # Keep in Mind
 
-**1)** The function does not take into account any default parameters that your resolvers may use. If default parameters exist in your resolver, make sure to add the key `defaultParams` with the value of an object with the keys as the variable names and the value of the default value the resolver uses.
+**1.** The function does not take into account any default parameters that your resolvers may use. If default parameters exist in your resolver, make sure to add the key `defaultParams` with the value of an object with the keys as the variable names and the value of the default value the resolver uses.
 
-**2)** We do not support GraphQL Subscription Types at this time.
+**2.** We do not support GraphQL Subscription Types at this time.
 
-**3)** We only support the main 5 HTTP REST Methods: Get, Post, Put, Patch, Delete. Any other method passed in will throw an error.
+**3.** We only support the main 5 HTTP REST Methods: Get, Post, Put, Patch, Delete. Any other method passed in will throw an error.
 
 # Contributors
 
