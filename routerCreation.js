@@ -71,22 +71,20 @@ const populateVariables = (requiredVariables, defaultParams, reqObj) => {
     
     Object.keys(requiredVariables).forEach(key => {
         Object.keys(reqObj).forEach(keyMatch => {
-            // console.log('KEY: ', key)
-            // console.log('keyMatch: ', keyMatch)
             if (key === `$${keyMatch}`){
                 variables[keyMatch] = reqObj[keyMatch]
             }
         })
     })
 
-    //console.log('VARIABLES: ', variables)
+    
     return Object.keys(variables).length > 0 ? variables: defaultParams ? defaultParams : null;
 }
 
 
 /* Everything in addRoutes function should:
     a) send response status and message to client
-    b) warm in the console the error that is returned from graphql
+    b) warn in the console the error that is returned from graphql
 */
 
 const addRoutes = (
