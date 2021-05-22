@@ -20,14 +20,14 @@ import { queryMap, routerCreation } from "monarq";
 
 There are two main functions that need to be invoked within your main Express/GraphQL server file.
 
-**Step 1:** `queryMap` is a function that will take a manifest object [see below](#required-user-inputs) and schema and return an object with created query/ mutation strings. `queryMap` takes two inputs:
+**Step 1:** `queryMap` is a function that will take a [Manifest Object](#required-user-inputs) and schema and return an object with created query/ mutation strings. `queryMap` takes two inputs:
 
 - A [Manifest Object](#required-user-inputs)
 - User's schema as a GQLSchema.
 
 Invoke this function in your main Express/GraphQL server file and save the result as a variable.
 
-Example:
+_Example:_
 
 ```javascript
 const queryMapObj = queryMap(manifest, schema);
@@ -39,7 +39,7 @@ const queryMapObj = queryMap(manifest, schema);
 - `queryMapObj`:(the saved value from invoking the queryMap function)
 - An Object with three keys: schema, context, and your created [`executeFn`](#required-user-inputs). This will return an express.Router instance that will have the API Paths inside the manifest object as it's routes!
 
-Example:
+_Example:_
 
 ```javascript
 const routes = routerCreation(manifest, queryMapObj, {
@@ -53,7 +53,7 @@ const routes = routerCreation(manifest, queryMapObj, {
 
 Now use Express's `app.use` with the first argument as the first endpoint that each client's REST Request will use, and the returned result of invoking `routerCreation`.
 
-Example:
+_Example:_
 
 ```javascript
 app.use("/rest", routes);
@@ -125,7 +125,7 @@ As you can see the string 'book' inside the Manifest Object coincides with the m
 
 A required input into the second function, `routerCreation`, will be the function that queries the user's GraphQL Server. Create a wrapper function labeled `executeFn` that accepts one argument, an object, with four keys: query, context, schema, and variables. Have the wrapper function return the response from the GraphQL server.
 
-Example:
+_Example:_
 
 ```javascript
 async const executeFn = ({ query, variables, schema, context }) => {
