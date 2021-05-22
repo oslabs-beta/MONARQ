@@ -149,7 +149,7 @@ Lastly, make sure the main GraphQL server file has schema and context imported i
 
 **2)** We do not support REST subscriptions at this time.
 
-#Contributors
+# Contributors
 
 [Peter Baniuszewicz]() [@Peter-Ba](https://github.com/Peter-Ba)
 
