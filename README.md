@@ -2,7 +2,7 @@
 
 **MONARQ** sets out to easily allow our users who have an existing Express/GraphQL server accept REST requests from their clients. With a quick install of our NPM Package and invoking two functions, you will have an Express/ GraphQL Server that now accepts REST requests. Here's how it works:
 
-## INSTALLATION
+## Installation
 
 Install **MONARQ** through the command line
 
@@ -16,7 +16,7 @@ Now the two main function of the package can be imported into your main Express/
 import { queryMap, routerCreation } from 'monarq';
 ```
 
-## USAGE
+## How To Use
 
 There are two main functions that need to be invoked within your main Express/GraphQL server file.
 
@@ -61,11 +61,9 @@ app.use('/rest', routes);
 
 That's it!
 
-# REQUIRED INPUTS
+## Required User Inputs
 
-**USER INPUTS**
-
-**MONARQ** allows our users to defined the REST Endpoints that they want to open to the public. Simply create a 'Manifest' object in a seperate file and import into your server file. You can also visit **MONARQ**'s website at <<INSERT WEBSITE HERE>> and create your manifest object there.
+**MONARQ** allows our users to defined the REST Endpoints that they want to open to the public. Simply create a 'Manifest' object in a seperate file and import into your server file. You can also visit **MONARQ**'s website at [insert website here]() and create your manifest object there.
 
 **STEP 1: DEFINE MANIFEST OBJECT**
 The manifest object should be in a specific format as follows:
@@ -141,13 +139,13 @@ async const executeFn = ({ query, variables, schema, context }) => {
 
 **STEP 3: IMPORT**
 
-Lastly, make sure the main GraphQL server file has schema and context imported in and now you are set to invoke the functions!
+Lastly, make sure the main Express/GraphQL server file has schema and context imported in and now you are set to invoke the functions!
 
-# THINGS TO KEEP IN MIND
+# Keep in Mind
 
 **1)** The function does not take into account any default parameters that your resolvers may use. If default parameters exist in your resolver, make sure to add the key `defaultParams` with the value of an object with the keys as the variable names and the value of the default value the resolver uses.
 
-**2)** We do not support REST subscriptions at this time.
+**2)** We do not support GraphQL Subscription Types at this time.
 
 # Contributors
 
