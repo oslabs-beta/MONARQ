@@ -1,16 +1,3 @@
-
-// user will designate REST endpoints, but assumption is that a GQL operation already exists for each one
-// error handling - if an invalid/non-existent operation is specified
-// we need to create a list of all the queries that match up with a specific endpoint
-// look up the operation value within the schema file and compose the GQL query
-// assumption: any operation being used for a REST endpoint will have its "fully expanded" query returned (e.g., every scalar field) and it cannot contain nested references (? - TBD) 
-// need to handle and have placeholders for parameter fields when necessary
-// whether these are stored in multiple files or one file can be determined later
-// this list of queries will then be referenced by the middleware based on the REST request received
-// look up the path of the request (either within the manifest file or directly on the file that has the query operations) to find the corresponding query
-// pass the query into the execution function
-
-
 // *** NEED TO HAVE USER UPDATE THIS LIST IF THEY HAVE ANY CUSTOM SCALARS
 // this customScalars array will be exposed to users
 const customScalars = ['Date'];
@@ -55,7 +42,7 @@ function queryMap(manifest, schema) {
 ***********************************/
 
 function generateQuery(schema, operation) {
-  // first figure out whether it is a query or mutation
+  // first determine whether it is a query or mutation
   const typeInfo = typeChecker(schema, operation)
   const operationType = typeInfo[0];
   const typeSchema = typeInfo[1];
@@ -68,7 +55,6 @@ function generateQuery(schema, operation) {
   let recursiveBreak = [];
 
   // check to see if the type is a scalar type -> if not, then need to look up the fields for each type
-  // NOTE: operationFields.type (e.g., User!) is type Object, not String
   const operationFieldsTypeTrim = typeTrim(operationFields.type.toString());
 
   if (scalarTypes.includes(operationFieldsTypeTrim)) returnFields[operationFieldsTypeTrim] = '';
@@ -99,7 +85,6 @@ function generateQuery(schema, operation) {
     varsString = '';
   }
 
-  // the final query string is composed of the operation type + name of operation (args) + fields
   const returnString = `${operationType.toLowerCase()} ${varsString} { ${operation} ${argsString} { ${queryString} } }`
   return returnString;
 }
@@ -130,7 +115,7 @@ function typeChecker(schema, operation) {
 
 
 
-/* converts custom type text to simple strings (removes [] and !) */
+/* converts custom type text to simple strings */
 function typeTrim(type) {
   const typeArr = type.split('');
   const trimArr = [];
@@ -145,11 +130,7 @@ function typeTrim(type) {
 
 
 /* recursive function which collects all of the fields associated with a type; if the field is scalar type, it adds to the return object;
-if the field is a custom type, the function is invoked again on that field's schema fields continues recursively until only scalar types are found;
-this function ignores situations where a custom type has itself as a field, as this provides duplicative information & causes endless loops */
-
-// this is a helper function that will track the number of times a customType has had grabFields invoked on it
-// used to ensure that we run 1 layer of circular calls to get all fields, while avoiding a max callstack error
+if the field is a custom type, the function is invoked again on that field's schema fields continues recursively until only scalar types are found*/
 function countOccurrences(array, val) {
   return array.reduce((a, v) => (v === val ? a + 1 : a), 0);
 }
@@ -250,9 +231,4 @@ function varStrBuild(varObj) {
 
 
 
-
 module.exports = queryMap;
-
-
-
-
