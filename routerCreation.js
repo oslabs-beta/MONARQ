@@ -25,11 +25,11 @@ module.exports = routerCreation = (
             
             args = args[endpoints[apiPath][method].operation]
 
-            for (let query in queries) {
+            Object.keys(queries).forEach(query => {
                 if (query === endpoints[apiPath][method].operation) {
                     currentQuery = queries[query]
                 }
-            }
+            })
 
             if (!currentQuery) throw new Error('Manifest Obj \'s Operation Field Doesn\'t match Valid Query or Mutation in Schema. Operation Field is Mandatory in Manifest Obj for every method. Check the operation field in the Manifest Object. Visit our website to create a manifest object')
 
@@ -71,15 +71,12 @@ const populateVariables = (requiredVariables, defaultParams, reqObj) => {
     
     Object.keys(requiredVariables).forEach(key => {
         Object.keys(reqObj).forEach(keyMatch => {
-            // console.log('KEY: ', key)
-            // console.log('keyMatch: ', keyMatch)
             if (key === `$${keyMatch}`){
                 variables[keyMatch] = reqObj[keyMatch]
             }
         })
     })
 
-    //console.log('VARIABLES: ', variables)
     return Object.keys(variables).length > 0 ? variables: defaultParams ? defaultParams : null;
 }
 
@@ -113,6 +110,7 @@ const addRoutes = (
                 };
                 
                 const { schema, context, executeFn } = infoForExecution;
+                
                 const variables = populateVariables(argsForQuery, defaultParams, possibleInputs);
                 
 
@@ -121,9 +119,10 @@ const addRoutes = (
 
                 if (typeof context === 'function') {
                     newContext = await context();
-                    newContext.headers = req.headers
-                }  else if (context === 'object') {
-                    newContext.headers = req.headers
+                    newContext.headers = req.headers;
+                }  else if (typeof context === 'object') {
+                    newContext = context;
+                    newContext.headers = req.headers;
                 }
 
                 if (!newContext) throw new Error('Context was not passed in correctly, could not execute the query. Make sure context is either a function or an object. Please check the documentation for MONARQ further understanding.')
@@ -135,8 +134,7 @@ const addRoutes = (
                     context: newContext
                 }
 
-                const response = await executeFn(executeObj)
-                
+                const response = await executeFn(executeObj);
 
                 if (response.errors) {
                     res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
@@ -146,7 +144,7 @@ const addRoutes = (
 
                 res.locals.data = response;
 
-                return res.status(200).json(res.locals.data)
+                return res.status(200).json(res.locals.data);
             })
 
             break;
@@ -165,6 +163,7 @@ const addRoutes = (
                 };
                 
                 const { schema, context, executeFn } = infoForExecution;
+                
                 const variables = populateVariables(argsForQuery, defaultParams, possibleInputs);
                 
 
@@ -173,9 +172,10 @@ const addRoutes = (
 
                 if (typeof context === 'function') {
                     newContext = await context();
-                    newContext.headers = req.headers
-                }  else if (context === 'object') {
-                    newContext.headers = req.headers
+                    newContext.headers = req.headers;
+                }  else if (typeof context === 'object') {
+                    newContext = context;
+                    newContext.headers = req.headers;
                 }
 
                 if (!newContext) throw new Error('Context was not passed in correctly, could not execute the query. Make sure context is either a function or an object. Please check the documentation for MONARQ further understanding.')
@@ -187,8 +187,7 @@ const addRoutes = (
                     context: newContext
                 }
 
-                const response = await executeFn(executeObj)
-                
+                const response = await executeFn(executeObj);
 
                 if (response.errors) {
                     res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
@@ -198,7 +197,7 @@ const addRoutes = (
 
                 res.locals.data = response;
 
-                return res.status(200).json(res.locals.data)
+                return res.status(200).json(res.locals.data);
             });
 
             break;
@@ -217,6 +216,7 @@ const addRoutes = (
                 };
                 
                 const { schema, context, executeFn } = infoForExecution;
+                
                 const variables = populateVariables(argsForQuery, defaultParams, possibleInputs);
                 
 
@@ -225,9 +225,10 @@ const addRoutes = (
 
                 if (typeof context === 'function') {
                     newContext = await context();
-                    newContext.headers = req.headers
-                }  else if (context === 'object') {
-                    newContext.headers = req.headers
+                    newContext.headers = req.headers;
+                }  else if (typeof context === 'object') {
+                    newContext = context;
+                    newContext.headers = req.headers;
                 }
 
                 if (!newContext) throw new Error('Context was not passed in correctly, could not execute the query. Make sure context is either a function or an object. Please check the documentation for MONARQ further understanding.')
@@ -239,8 +240,7 @@ const addRoutes = (
                     context: newContext
                 }
 
-                const response = await executeFn(executeObj)
-                
+                const response = await executeFn(executeObj);
 
                 if (response.errors) {
                     res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
@@ -250,7 +250,7 @@ const addRoutes = (
 
                 res.locals.data = response;
 
-                return res.status(200).json(res.locals.data)
+                return res.status(200).json(res.locals.data);
             });
 
             break;
@@ -269,6 +269,7 @@ const addRoutes = (
                 };
                 
                 const { schema, context, executeFn } = infoForExecution;
+                
                 const variables = populateVariables(argsForQuery, defaultParams, possibleInputs);
                 
 
@@ -277,9 +278,10 @@ const addRoutes = (
 
                 if (typeof context === 'function') {
                     newContext = await context();
-                    newContext.headers = req.headers
-                }  else if (context === 'object') {
-                    newContext.headers = req.headers
+                    newContext.headers = req.headers;
+                }  else if (typeof context === 'object') {
+                    newContext = context;
+                    newContext.headers = req.headers;
                 }
 
                 if (!newContext) throw new Error('Context was not passed in correctly, could not execute the query. Make sure context is either a function or an object. Please check the documentation for MONARQ further understanding.')
@@ -291,8 +293,7 @@ const addRoutes = (
                     context: newContext
                 }
 
-                const response = await executeFn(executeObj)
-                
+                const response = await executeFn(executeObj);
 
                 if (response.errors) {
                     res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
@@ -302,7 +303,7 @@ const addRoutes = (
 
                 res.locals.data = response;
 
-                return res.status(200).json(res.locals.data)
+                return res.status(200).json(res.locals.data);
 
             });
 
@@ -322,6 +323,7 @@ const addRoutes = (
                 };
                 
                 const { schema, context, executeFn } = infoForExecution;
+                
                 const variables = populateVariables(argsForQuery, defaultParams, possibleInputs);
                 
 
@@ -330,9 +332,10 @@ const addRoutes = (
 
                 if (typeof context === 'function') {
                     newContext = await context();
-                    newContext.headers = req.headers
-                }  else if (context === 'object') {
-                    newContext.headers = req.headers
+                    newContext.headers = req.headers;
+                }  else if (typeof context === 'object') {
+                    newContext = context;
+                    newContext.headers = req.headers;
                 }
 
                 if (!newContext) throw new Error('Context was not passed in correctly, could not execute the query. Make sure context is either a function or an object. Please check the documentation for MONARQ further understanding.')
@@ -344,8 +347,7 @@ const addRoutes = (
                     context: newContext
                 }
 
-                const response = await executeFn(executeObj)
-                
+                const response = await executeFn(executeObj);
 
                 if (response.errors) {
                     res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
@@ -355,7 +357,7 @@ const addRoutes = (
 
                 res.locals.data = response;
 
-                return res.status(200).json(res.locals.data)
+                return res.status(200).json(res.locals.data);
 
             });
 
