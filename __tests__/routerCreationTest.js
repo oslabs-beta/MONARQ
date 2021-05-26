@@ -23,7 +23,17 @@ describe('routeCreation Function Test', () => {
         }
     }
 
-    const executeFn = jest.fn()
+    const executeFn = ({ query, variables, schema, context}) => {
+        return {
+            success: 'Test successful'
+        }
+    }
+
+    const badExecuteFn = ({ query, variables, schema, context }) => {
+        return {
+            errors: 'Test Failed'
+        }
+    }
     const returned = routerCreation(manifest, queryMap, {
         schema: 'This is Schema',
         context: {
@@ -32,9 +42,14 @@ describe('routeCreation Function Test', () => {
         executeFn
     })
    
-    beforeAll(() => {
-        
+    const badReturned = routerCreation(manifest, queryMap, {
+        schema: 'This is Schema',
+        context: {
+            info: 'This is Context'
+        },
+        executeFn: badExecuteFn
     })
+
 
     it('should return an express router function', () => {
         expect(typeof returned).toEqual('function')
@@ -53,11 +68,40 @@ describe('routeCreation Function Test', () => {
     
     describe('Testing express router that is outputted from routerCreation function', ()=> {
         app.use('/test', returned);
+        app.use('/bad', badReturned)
 
         it('When request is sent, should send back a status code 200 if inputs were correct', (done) => {
             request(app)
             .get('/test/working')
             .expect(200, done)
+        })
+
+        it('Should throw error if the executeFn was passed wrong', (done) => {
+            request(app)
+            .get('/bad/working')
+            .expect(500, done)
+            
+        })
+        it('Should Contain Response back to client', (done) => {
+            request(app)
+            .get('/test/working')
+            .then((response => {
+                expect(response.body.success).toEqual('Test successful')
+                done();
+            }))
+            .catch(err => {
+                if (err) console.log(err)
+            })
+        })
+
+        it('Should Contain Error Response back to client', (done) => {
+            request(app)
+            .get('/bad/working')
+            .then((response => {
+                expect(response.body).toEqual('Issue Executing Request, Please Check Documentation on How to send Request to Server')
+                done();
+            }))
+            .catch(done)
         })
     })
 
