@@ -3,7 +3,7 @@ const express = require('express')
 const request = require('supertest');
 const app = express();
 
-describe('routeCreation Function Test', () => {
+describe('routerCreation Function Test', () => {
     const manifest = {
         endpoints: {
             '/working' : {
