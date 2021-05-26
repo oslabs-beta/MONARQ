@@ -1,32 +1,32 @@
-// *** NEED TO HAVE USER UPDATE THIS LIST IF THEY HAVE ANY CUSTOM SCALARS
-// this customScalars array will be exposed to users
-const customScalars = ['Date'];
-
-// this scalarTypes array will be hidden from users
-const scalarTypes = ['String', 'Int', 'ID', 'Boolean', 'Float', ...customScalars]
-
-
-
 /******************************************************** 
-***** FINAL ARGS & QUERY OBJECT OUTPUT FUNCTION *********
-*********************************************************/
+***** ARGS & QUERY OBJECT OUTPUT FUNCTION ***************
+********************************************************/
 
-function queryMap(manifest, schema) {
+// PARAMETER -> manifest: the manifest object created by the user, which contains REST endpoints and corresponding GraphQL operations 
+// PARAMETER -> schema: the schema that contains all relevant GraphQL operations and types, including those specified in the manifest; must be a GraphQLSchema object
+// PARAMETER (optional) -> customScalars: an array containing all custom scalar types that exist in the schema argument; each element should be a custom scalar type and in string format (e.g., ['Month', 'Year'])
+  // if no custom scalar types are used in the schema, then do not pass an argument for this parameter
+// RETURNS -> An object containing the two keys below. This is an input into the routerCreation function.
+  // args: an object composed of key-value pairs for any operations (keys) that have argument inputs (values); note that operations without argument inputs will not be included here 
+  // queries: an object composed of key-value pairs for all operations (keys) specified in the manifest and the corresponding GraphQL schema (values) to be invoked
+
+function queryMap(manifest, schema, customScalars = []) {
+  if(typeof schema !== 'object') throw new Error('Schema must be a GraphQLSchema object')
   const endPoints = manifest.endpoints;
   const argsObj = {};
   const queryObj = {};
-  for (const path in endPoints) {
-    for (const action in endPoints[path]) {
+  const scalarTypes = ['String', 'Int', 'ID', 'Boolean', 'Float', ...customScalars]
+  for (const path of Object.keys(endPoints)) {
+    for (const action of Object.keys(endPoints[path])) {
       const operationName = endPoints[path][action].operation
-      
       // generate the args object
       const typeSchema = typeChecker(schema, operationName)[1]
       const operationFields = typeSchema[operationName];
-      const varObj = grabArgs(schema, operationFields.args)[1];
+      const varObj = grabArgs(schema, operationFields.args, scalarTypes)[1];
       argsObj[operationName] = varObj
 
       // generate the query object
-      queryObj[operationName] = generateQuery(schema, operationName);
+      queryObj[operationName] = generateQuery(schema, operationName, scalarTypes);
     };
   };
   return {
@@ -39,54 +39,54 @@ function queryMap(manifest, schema) {
 
 /********************************** 
 ***** QUERY GENERATOR FUNCTION ****
-***********************************/
+**********************************/
+// This is invoked within queryMap; can also be used to generate the GraphQL fully expanded query string for any single operation
+// PARAMETER -> schema: same schema that is passed into queryMap 
+// PARAMETER -> operation: a GraphQL operation that has been mapped to a REST endpoint within the manifest object
+// PARAMETER -> scalarTypes: an array containing all standard scalar types as well as any custom scalar types that have been declared in the schema (scalarTypes is declared in queryMap and this is a pass-through parameter)
+// RETURNS -> A string comprising the GraphQL query that corresponds to the operation argument; this query will be passed to the GraphQL server each time a request is made to the corresponding REST endpoint
+  // The query string includes all relevant parts: operation type, variables specification, operation name, arguments specification, fields specification (all available fields are requested)
 
-function generateQuery(schema, operation) {
-  // first determine whether it is a query or mutation
+function generateQuery(schema, operation, scalarTypes) {
+  //  determine whether it is a query or mutation
   const typeInfo = typeChecker(schema, operation)
   const operationType = typeInfo[0];
   const typeSchema = typeInfo[1];
 
-  // now look for all of the fields that need to be specified for the operation
+  // look for all of the fields that need to be specified for the operation
   let returnFields = {};
-  let operationFields = typeSchema[operation];
+  const operationFields = typeSchema[operation];
   let customTypeFields;
   let customType;
-  let recursiveBreak = [];
+  const recursiveBreak = [];
 
   // check to see if the type is a scalar type -> if not, then need to look up the fields for each type
   const operationFieldsTypeTrim = typeTrim(operationFields.type.toString());
-
   if (scalarTypes.includes(operationFieldsTypeTrim)) returnFields[operationFieldsTypeTrim] = '';
   else {
     customType = operationFields.type;
     customTypeFields = schema.getType(typeTrim(operationFields.type.toString())).getFields()
-    // use the grabFields helper function to recurse through each fields schema until we have all scalar fields for a type
-    returnFields = grabFields(schema, customType, customTypeFields, recursiveBreak);
+    returnFields = grabFields(schema, customType, customTypeFields, recursiveBreak, scalarTypes);
   }
-  // invoke buildString to create the string form of the query field
   const queryString = buildString(returnFields);
 
-  // invoke grabArgs + buildString + argsStrFormatter if the type.args object is not empty
+  // compose the variable and argument portions of the query if necessary
   let argsString;
   let varsString;
   if (operationFields.args.length) {
-
-    const argsObj = grabArgs(schema, operationFields.args)[0];
+    const argsObj = grabArgs(schema, operationFields.args, scalarTypes)[0];
     const argsVal = argsStrFormatter(buildString(argsObj));
     argsString = `( ${argsVal} )`;
-    const varObj = grabArgs(schema, operationFields.args)[1];
+    const varObj = grabArgs(schema, operationFields.args, scalarTypes)[1];
     const varsVal = varStrBuild(varObj);
     varsString = `( ${varsVal} )`
-    // below is specifically for the creation of the args dictionary
     argsObj[operation] = argsVal;
   } else {
     argsString = '';
     varsString = '';
   }
 
-  const returnString = `${operationType.toLowerCase()} ${varsString} { ${operation} ${argsString} { ${queryString} } }`
-  return returnString;
+  return `${operationType.toLowerCase()} ${varsString} { ${operation} ${argsString} { ${queryString} } }`
 }
 
 
@@ -95,7 +95,7 @@ function generateQuery(schema, operation) {
 ***** HELPER FUNCTIONS ****
 ***************************/
 
-/* checks whether the operation is a query or mutation and returns that */
+/* determines whether the operation is a query or mutation */
 function typeChecker(schema, operation) {
   let operationType;
   let typeSchema;
@@ -129,24 +129,23 @@ function typeTrim(type) {
 
 
 
-/* recursive function which collects all of the fields associated with a type; if the field is scalar type, it adds to the return object;
-if the field is a custom type, the function is invoked again on that field's schema fields continues recursively until only scalar types are found*/
+/* grabFields collects all of the fields associated with a type; if the field is scalar type, it adds to the return object;
+if the field is a custom type, the function is invoked again on that field's schema fields continues recursively until only scalar types are found
+countOccurrences is used to track the number of times each customType has been called*/
 function countOccurrences(array, val) {
   return array.reduce((a, v) => (v === val ? a + 1 : a), 0);
 }
 
-function grabFields(schema, customTypeName, customTypeSchema, recursiveBreakArr) {
+function grabFields(schema, customTypeName, customTypeSchema, recursiveBreakArr, scalarTypes) {
   let returnObj = {};
-  for (const key in customTypeSchema) {
+  for (const key of Object.keys(customTypeSchema)) {
     let typeString = typeTrim(customTypeSchema[key].type.toString());
     if (scalarTypes.includes(typeString)) returnObj[key] = '';
     else {
-      if (typeString !== customTypeName.toString()) {
         recursiveBreakArr.push(typeString);
         if (countOccurrences(recursiveBreakArr, typeString) < 2) {
-          returnObj[key] = grabFields(schema, typeString, schema.getType(typeString).getFields(), recursiveBreakArr);
+          returnObj[key] = grabFields(schema, typeString, schema.getType(typeString).getFields(), recursiveBreakArr, scalarTypes);
         }
-      }
     }
   }
   return returnObj;
@@ -157,7 +156,7 @@ function grabFields(schema, customTypeName, customTypeSchema, recursiveBreakArr)
 /* convert the query/args object to string version; called recursively if there are nested type objs */
 function buildString(fieldsObj) {
   const queryArr = [];
-  for (const key in fieldsObj) {
+  for (const key of Object.keys(fieldsObj)) {
     queryArr.push(key);
     if (fieldsObj[key] !== '') {
       queryArr.push('{');
@@ -174,23 +173,22 @@ function buildString(fieldsObj) {
   1) single scalar arg
   2) multiple scalar args
   3) custom input types as args */
-function grabArgs(schema, argsArr) {
+function grabArgs(schema, argsArr, scalarTypes) {
   const returnArgsObj = {};
   const returnVarsObj = {};
   for (let i = 0; i < argsArr.length; i++) {
-    let typeString = typeTrim(argsArr[i].type.toString());
+    const typeString = typeTrim(argsArr[i].type.toString());
     if (scalarTypes.includes(typeString)) {
       returnArgsObj[argsArr[i].name] = '';
       returnVarsObj[`$${argsArr[i].name}`] = argsArr[i].type.toString();
     } else {
-      const nestedFields = grabFields(schema, typeString, schema.getType(typeString).getFields());
+      const nestedFields = grabFields(schema, typeString, schema.getType(typeString).getFields(), [], scalarTypes);
       returnArgsObj[argsArr[i].name] = nestedFields;
-      for(const field in nestedFields) {
+      for (const field of Object.keys(nestedFields)) {
         returnVarsObj[`$${field}`] = schema.getType(typeString).getFields()[field].type;
       };
     };
   };
-
   return [returnArgsObj, returnVarsObj];
 };
 
@@ -199,13 +197,11 @@ function grabArgs(schema, argsArr) {
 /* formats the args string into the arg:$arg format */
 function argsStrFormatter(str) {
   let strArray = str.split(' ');
-  //console.log('strArray', strArray)
   const insIndex = strArray.indexOf('{');
   if (insIndex > 0) {
     for (let i = insIndex + 1; i < strArray.length - 1; i++) {
       strArray[i] = `${strArray[i]}:$${strArray[i]},`
     };
-    // revisit for refactoring to handle more potential situations (currently line below handles a case like updateBook which has both scalar and custom argument types)
     if(insIndex > 1) strArray[0] = `${strArray[0]}:$${strArray[0]},`
     strArray.splice(insIndex, 0, ':');
   }
@@ -222,7 +218,7 @@ function argsStrFormatter(str) {
 /* formats the args string into the $var: type format for variables */
 function varStrBuild(varObj) {
   const varArr = [];
-  for (const key in varObj) {
+  for (const key of Object.keys(varObj)) {
     varArr.push(`${key}:`);
     varArr.push(`${varObj[key]},`);
   };
@@ -231,4 +227,4 @@ function varStrBuild(varObj) {
 
 
 
-module.exports = queryMap;
+module.exports = { queryMap, generateQuery, typeChecker, typeTrim, grabFields, buildString, grabArgs, argsStrFormatter, varStrBuild }

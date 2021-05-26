@@ -1,5 +1,6 @@
 const routerCreation = require('./routerCreation.js')
-const queryMap = require('./queryMap.js')
+const queryGen = require('./queryMap.js')
+const { queryMap } = queryGen
 
 module.exports = {
     routerCreation,
