@@ -10,8 +10,11 @@
   // args: an object composed of key-value pairs for any operations (keys) that have argument inputs (values); note that operations without argument inputs will not be included here 
   // queries: an object composed of key-value pairs for all operations (keys) specified in the manifest and the corresponding GraphQL schema (values) to be invoked
 
-function queryMap(manifest, schema, customScalars = []) {
-  if(typeof schema !== 'object') throw new Error('Schema must be a GraphQLSchema object')
+const queryMap = (manifest, schema, customScalars = []) => {
+  if(typeof manifest !== 'object') throw new Error('manifest argument must an object');
+  if(typeof schema !== 'object') throw new Error('schema argument must be a GraphQLSchema object');
+  if(typeof customScalars !== 'object') throw new Error('customScalars argument must be an array');
+
   const endPoints = manifest.endpoints;
   const argsObj = {};
   const queryObj = {};
@@ -47,7 +50,7 @@ function queryMap(manifest, schema, customScalars = []) {
 // RETURNS -> A string comprising the GraphQL query that corresponds to the operation argument; this query will be passed to the GraphQL server each time a request is made to the corresponding REST endpoint
   // The query string includes all relevant parts: operation type, variables specification, operation name, arguments specification, fields specification (all available fields are requested)
 
-function generateQuery(schema, operation, scalarTypes) {
+const generateQuery = (schema, operation, scalarTypes) => {
   //  determine whether it is a query or mutation
   const typeInfo = typeChecker(schema, operation)
   const operationType = typeInfo[0];
@@ -96,7 +99,7 @@ function generateQuery(schema, operation, scalarTypes) {
 ***************************/
 
 /* determines whether the operation is a query or mutation */
-function typeChecker(schema, operation) {
+const typeChecker = (schema, operation) => {
   let operationType;
   let typeSchema;
   const querySchema = schema.getQueryType().getFields();
@@ -116,7 +119,7 @@ function typeChecker(schema, operation) {
 
 
 /* converts custom type text to simple strings */
-function typeTrim(type) {
+const typeTrim = type => {
   const typeArr = type.split('');
   const trimArr = [];
   for (let i = 0; i < typeArr.length; i++) {
@@ -132,11 +135,11 @@ function typeTrim(type) {
 /* grabFields collects all of the fields associated with a type; if the field is scalar type, it adds to the return object;
 if the field is a custom type, the function is invoked again on that field's schema fields continues recursively until only scalar types are found
 countOccurrences is used to track the number of times each customType has been called*/
-function countOccurrences(array, val) {
+const countOccurrences = (array, val) => {
   return array.reduce((a, v) => (v === val ? a + 1 : a), 0);
 }
 
-function grabFields(schema, customTypeName, customTypeSchema, recursiveBreakArr, scalarTypes) {
+const grabFields = (schema, customTypeName, customTypeSchema, recursiveBreakArr, scalarTypes) => {
   let returnObj = {};
   for (const key of Object.keys(customTypeSchema)) {
     let typeString = typeTrim(customTypeSchema[key].type.toString());
@@ -154,7 +157,7 @@ function grabFields(schema, customTypeName, customTypeSchema, recursiveBreakArr,
 
 
 /* convert the query/args object to string version; called recursively if there are nested type objs */
-function buildString(fieldsObj) {
+const buildString = fieldsObj => {
   const queryArr = [];
   for (const key of Object.keys(fieldsObj)) {
     queryArr.push(key);
@@ -173,7 +176,7 @@ function buildString(fieldsObj) {
   1) single scalar arg
   2) multiple scalar args
   3) custom input types as args */
-function grabArgs(schema, argsArr, scalarTypes) {
+const grabArgs = (schema, argsArr, scalarTypes) => {
   const returnArgsObj = {};
   const returnVarsObj = {};
   for (let i = 0; i < argsArr.length; i++) {
@@ -195,7 +198,7 @@ function grabArgs(schema, argsArr, scalarTypes) {
 
 
 /* formats the args string into the arg:$arg format */
-function argsStrFormatter(str) {
+const argsStrFormatter = str => {
   let strArray = str.split(' ');
   const insIndex = strArray.indexOf('{');
   if (insIndex > 0) {
@@ -216,7 +219,7 @@ function argsStrFormatter(str) {
 
 
 /* formats the args string into the $var: type format for variables */
-function varStrBuild(varObj) {
+const varStrBuild = varObj => {
   const varArr = [];
   for (const key of Object.keys(varObj)) {
     varArr.push(`${key}:`);

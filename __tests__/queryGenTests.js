@@ -12,6 +12,12 @@ describe('queryMap function', () => {
     expect(typeof result.args).toBe('object');
     expect(typeof result.queries).toBe('object');
   });
+
+  it('throws errors if arguments are not the correct data type', () => {
+    expect(() => {queryMap('test', schema, ['Date'])}).toThrow(Error('manifest argument must an object'));
+    expect(() => {queryMap(manifest, 'test', ['Date'])}).toThrow(Error('schema argument must be a GraphQLSchema object'));
+    expect(() => {queryMap(manifest, schema, 'test')}).toThrow(Error('customScalars argument must be an array'));
+  });
 });
 
 describe('generateQuery function', () => {
@@ -25,6 +31,10 @@ describe('generateQuery function', () => {
 
   it('handles arguments of custom types', () => {
     expect(generateQuery(schema, 'updateBook', scalarTypes)).toBe('mutation ( $id: ID!, $name: String, ) { updateBook ( id:$id, book : { name:$name, } ) { id name author { id name publishers { id name createdAt updatedAt } createdAt updatedAt } createdAt updatedAt } }');
+  });
+
+  it('throws an error if operation is not defined in schema', () => {
+    expect(() => {generateQuery(schema, 'test', scalarTypes)}).toThrow(Error(`Operation 'test' is not defined in the schema`));
   });
 })
 
