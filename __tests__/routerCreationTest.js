@@ -1,10 +1,12 @@
 const routerCreation = require('../routerCreation.js');
 const express = require('express')
+const request = require('supertest');
+const app = express();
 
 describe('routeCreation Function Test', () => {
     const manifest = {
         endpoints: {
-            '/working/:id' : {
+            '/working' : {
                 get: {
                     operation: 'yes'
                 }
@@ -24,7 +26,9 @@ describe('routeCreation Function Test', () => {
     const executeFn = jest.fn()
     const returned = routerCreation(manifest, queryMap, {
         schema: 'This is Schema',
-        context: 'This is Context',
+        context: {
+            info: 'This is Context'
+        },
         executeFn
     })
    
@@ -44,8 +48,17 @@ describe('routeCreation Function Test', () => {
         const badManifest = {
             endpoints: { }
         }
-        expect(() => routerCreation(badManifest)).toThrow(Error('manifest is not defined in routeCreation function. Please check documentation on how to pass in the manifest properly'))
+        expect(() => routerCreation(badManifest)).toThrow(Error('manifest is not defined in routeCreation function. Please check documentation for MONARQ on how to pass in the manifest properly'))
     })
     
+    describe('Testing express router that is outputted from routerCreation function', ()=> {
+        app.use('/test', returned);
+
+        it('When request is sent, should send back a status code 200 if inputs were correct', (done) => {
+            request(app)
+            .get('/test/working')
+            .expect(200, done)
+        })
+    })
 
 })
