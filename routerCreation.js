@@ -25,11 +25,11 @@ module.exports = routerCreation = (
             
             args = args[endpoints[apiPath][method].operation]
 
-            for (let query in queries) {
+            Object.keys(queries).forEach(query => {
                 if (query === endpoints[apiPath][method].operation) {
                     currentQuery = queries[query]
                 }
-            }
+            })
 
             if (!currentQuery) throw new Error('Manifest Obj \'s Operation Field Doesn\'t match Valid Query or Mutation in Schema. Operation Field is Mandatory in Manifest Obj for every method. Check the operation field in the Manifest Object. Visit our website to create a manifest object')
 
@@ -71,15 +71,12 @@ const populateVariables = (requiredVariables, defaultParams, reqObj) => {
     
     Object.keys(requiredVariables).forEach(key => {
         Object.keys(reqObj).forEach(keyMatch => {
-            // console.log('KEY: ', key)
-            // console.log('keyMatch: ', keyMatch)
             if (key === `$${keyMatch}`){
                 variables[keyMatch] = reqObj[keyMatch]
             }
         })
     })
 
-    //console.log('VARIABLES: ', variables)
     return Object.keys(variables).length > 0 ? variables: defaultParams ? defaultParams : null;
 }
 
