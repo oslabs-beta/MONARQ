@@ -145,7 +145,7 @@ Lastly, make sure the main Express/GraphQL server file has the user's GQL schema
 
 # Keep in Mind
 
-**1.** The function does not take into account any default parameters that your resolvers may use. If default parameters exist in your resolver, make sure to add the key `defaultParams` with the value of an object with the keys as the variable names and the value of the default value the resolver uses.
+**1.** The function does not take into account any default parameters that the GQL resolvers may use. If default parameters exist in the resolvers, make sure to add the key `defaultParams` with the value of an object with the keys as the variable names and the value of the default value the resolver uses. See the above example [Manifest Object](#required-user-inputs) for more details.
 
 **2.** We do not support GraphQL Subscription Types at this time.
 
