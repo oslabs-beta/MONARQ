@@ -70,13 +70,22 @@ const populateVariables = (requiredVariables, defaultParams, reqObj) => {
 
     
     Object.keys(requiredVariables).forEach(key => {
+        const keyTrim = key.slice(1, key.length)
+        console.log('keyTrim', keyTrim)
+        console.log('in the outer loop')
         Object.keys(reqObj).forEach(keyMatch => {
             if (key === `$${keyMatch}`){
                 variables[keyMatch] = reqObj[keyMatch]
+                console.log('in the inner loop')
+            }
+            if (!reqObj[keyTrim] && !defaultParams) {
+              console.log('in the error loop')
+              // throw new Error(`Missing argument '${keyTrim}' of type '${requiredVariables[key]}'. Please add this to the request.`);
             }
         })
     })
 
+    console.log('variables obj within func', variables)
     return Object.keys(variables).length > 0 ? variables: defaultParams ? defaultParams : null;
 }
 
@@ -112,7 +121,6 @@ const addRoutes = (
                 const { schema, context, executeFn } = infoForExecution;
                 
                 const variables = populateVariables(argsForQuery, defaultParams, possibleInputs);
-                
 
               //checking if context is a function or and object and adding the headers to that object
                 let newContext;
@@ -135,9 +143,9 @@ const addRoutes = (
                 }
 
                 const response = await executeFn(executeObj);
-
+          
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
                     console.warn(`${response.errors}`)
                     return;
                 }
@@ -190,7 +198,7 @@ const addRoutes = (
                 const response = await executeFn(executeObj);
 
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
                     console.warn(`${response.errors}`)
                     return;
                 }
@@ -243,7 +251,7 @@ const addRoutes = (
                 const response = await executeFn(executeObj);
 
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
                     console.warn(`${response.errors}`)
                     return;
                 }
@@ -296,7 +304,7 @@ const addRoutes = (
                 const response = await executeFn(executeObj);
 
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
                     console.warn(`${response.errors}`)
                     return;
                 }
@@ -350,7 +358,7 @@ const addRoutes = (
                 const response = await executeFn(executeObj);
 
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server')
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
                     console.warn(`${response.errors}`)
                     return;
                 }
