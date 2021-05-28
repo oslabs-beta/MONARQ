@@ -1,8 +1,18 @@
 # MONARQ
 
-**MONARQ** sets out to easily allow our users who have an existing Express/GraphQL server accept REST requests from their clients. With a quick install of our NPM Package and invoking two functions, you will have an Express/ GraphQL Server that now accepts REST requests. Here's how it works:
+**MONARQ** makes it easy to accept REST requests with an existing Express/GraphQL server. Expand your application's API compatability with just a few lines of code.  
 
-## Installation
+
+## Contents
+[_Installation_](#installation)  
+[_How It Works_](#how-it-works)  
+[_Required User Inputs_](#required-user-inputs)  
+[_Getting Started_](#getting-started)  
+[_Keep in Mind_](#keep-in-mind)  
+  
+
+
+# Installation
 
 Install **MONARQ** through the command line
 
@@ -10,63 +20,75 @@ Install **MONARQ** through the command line
 npm install monarq
 ```
 
-Now the two main function of the package can be imported into your main Express/GraphQL server.
+Now the two core functions of the package can be imported into your main Express/GraphQL server.
 
 ```javascript
-import { queryMap, routerCreation } from "monarq";
+import { queryMap, routerCreation } from 'monarq';
 ```
 
-## How To Use
+# How It Works
 
-There are two main functions that need to be invoked within your main Express/GraphQL server file.
+There are two functions that need to be invoked within your main Express/GraphQL server file.
 
-**Step 1:** `queryMap` is a function that will take a [Manifest Object](#required-user-inputs) and GQL schema and return an object with created query/ mutation strings. `queryMap` takes two inputs:
+### Step 1:
+`queryMap` generates an object containing GraphQL queries/mutations and arguments for each operation specified in the [Manifest Object](#required-user-inputs). This 'map' of queries will be used to match REST requests to corresponding GQL operations. `queryMap` takes up to three arguments:
 
-- A [Manifest Object](#required-user-inputs)
-- User's schema as a GQL Schema.
+- [Manifest Object](#required-user-inputs)
+- Schema of type GQLSchema object
+- (_Optional_) Array containing any custom scalar types declared in your schema 
 
-Invoke this function in your main Express/GraphQL server file and save the result as a variable.
+Invoke this function in your main Express/GraphQL server file and assign the result to a constant.  
 
-_Example:_
+_Examples_
 
+If no custom scalar types are used:
 ```javascript
-const queryMapObj = queryMap(manifest, schema);
+const createdQuery = queryMap(manifest, schema);
+```
+OR
+
+If a custom scalar type of 'Date' is defined in the schema:
+```javascript
+const createdQuery = queryMap(manifest, schema, ['Date']); 
 ```
 
-**Step 2:** `routerCreation` is a function that takes three arguments:
+### Step 2:
+`routerCreation` returns an express.Router instance contains route handlers for each of the API Paths defined within the [Manifest Object](#required-user-inputs).  `routerCreation` takes three arguments:
 
-- [Manifest Object](#required-user-inputs),
-- `queryMapObj`:(the saved value from invoking the queryMap function)
-- An Object with three keys: schema, context, and your created [`executeFn`](#required-user-inputs). This will return an express.Router instance that will have the API Paths inside the manifest object as it's routes!
+- [Manifest Object](#required-user-inputs)
+- `createdQuery` (the saved value from invoking the queryMap function)
+- An Object with three keys: schema, context, and your created [`executeFn`](#required-user-inputs)  
 
-_Example:_
+_Example_
 
 ```javascript
-const routes = routerCreation(manifest, queryMapObj, {
+const routes = routerCreation(manifest, createdQuery, {
   schema,
   context,
   executeFn,
 });
 ```
 
-**Step 3:** `app.use`
+### Step 3: 
+Implement the newly created router with `app.use` in your server file. All REST requests should be directed to the same top-level path (e.g., '/rest') so that the `routes` middleware will be applied.  
 
-Now use Express's `app.use` with the first argument as the first endpoint that each client's REST Request will use, and the returned result of invoking `routerCreation`.
-
-_Example:_
+_Example_
 
 ```javascript
-app.use("/rest", routes);
+app.use('/rest', routes);
 ```
 
-That's it!
+That's it! Your application is now ready to accept both GraphQL and REST requests.
 
-## Required User Inputs
+# Required User Inputs
 
-**MONARQ** allows our users to define the REST Endpoints that they want to open to the public. Simply create a 'Manifest' object in a seperate file and import into your server file. You can also visit **MONARQ**'s [website](link_for_website) and easily create the manifest object there.
+Before implementing `queryMap` and `routerCreation`, you will have to define the REST endpoints that you want to expose. Each REST endpoint will be mapped to a GraphQL operation, thus allowing the client to send REST requests and you to handle those requests with your GraphQL server. **MONARQ** gives you the flexibility to define as many or as few REST endpoints as you want to expose.     
 
-**STEP 1: DEFINE MANIFEST OBJECT**
-The Manifest Object should be in a specific format as follows:
+Create a manifest object in a file and import into your server file. You can also visit **MONARQ**'s [website](link_for_website) to create the manifest object using a simple visual interface.
+
+### 1) DEFINE MANIFEST OBJECT    
+
+The Manifest Object must be in a specific format as shown in the following example:
 
 ```javascript
 const manifest = {
@@ -80,10 +102,7 @@ const manifest = {
             }
         },
         '/books': {
-            get : {
-                operation: 'books'
-            },
-            post: {
+            get: {
                 operation: 'books'
                 defaultParams: {
                     pageSize: 20,
@@ -96,36 +115,37 @@ const manifest = {
 }
 ```
 
-This Manifest Object is a required input into both functions. Each manifest object will contain:
+This Manifest Object is a required input into both `queryMap` and `routerCreation`. Each manifest object will contain:  
 
-- One Object with the key **Endpoints**
-- The **Endpoints** Object will have all the **REST API Paths** you want to open to the public as the keys with the value of an object. Include as many or as little paths you want to open to the client. That is the beauty of **MONARQ**; the user can open as many or as little of your GraphQL server to the REST clients!
-- Inside each **REST API Paths** object, the keys will have one of these five labels: **GET, POST, PUT, PATCH, DELETE**. These methods correspond with what method you want the client to send the request as.
-- Lastly, inside the **REST API Paths** object, a required field `operation` will have the value of a string that corresponds to the Query or Mutation Type Object in the user's schema.
+- A key called **endpoints**, with value object
+- The **endpoints** object will have all the **REST API Paths** you want to expose as the keys with the value of an object
+  - Remember to have clients pre-pend these paths with whatever top-level path was defined in your route handler when making requests (e.g., '/rest/books') 
+- Inside each **REST API Path** object, the keys will have one of these five labels: **GET, POST, PUT, PATCH, DELETE**. These methods correspond with the HTTP method that you want the client to send the request as.
+- Inside each **HTTP method** object, a required key `operation` will have the value of a string that corresponds to the GraphQL Query or Mutation operation name that should be invoked when the REST endpoint is requested. Note: the operation must be present within the GraphQL schema.
+  - _Optional_: if the `operation` requires arguments and default parameters have been defined, you must specify these within an object at key **defaultParams**, also within the **HTTP method** object   
 
-For the Manifest Object Example above, it is assumed that the user has a method inside their Query or Mutation Type that corresponds to the operation string value.
-
-_Example schema below:_
+_Excerpt of an example schema corresponding to the the manifest object above:_  
 
 ```graphql
 type Query {
-  books(params: QueryParams): Books!
+  books(pageSize: Int!, page: Int!): Books!
   book(id: ID!): Book
 }
 
 type Mutation {
-  createBook(book: BookCreateInput!): Book!
   updateBook(id: ID!, book: BookUpdateInput!): Book!
 }
 ```
 
-As you can see the string 'book' inside the Manifest Object coincides with the method 'book' inside the Query Type Object and so on...
+  
 
-**STEP 2: DEFINE EXECUTE FUNCTION**
+### 2) DEFINE EXECUTE FUNCTION  
 
-A required input into the second function, `routerCreation`, will be the function that queries the user's GraphQL Server. Create a wrapper function labeled `executeFn` that accepts one argument, an object, with four keys: query, context, schema, and variables. Have the wrapper function return the response from the GraphQL server.
+One of the required arguments for `routerCreation` is a standardized form of the method that your server uses to execute GraphQL queries. Create a wrapper function labeled `executeFn` that accepts one argument, an object, with four keys: query, context, schema, and variables. Have the wrapper function return the response from the GraphQL server.  
 
-_Example:_
+_Example_
+
+In this case, the native graphql method from graphql.js is used to execute queries.  
 
 ```javascript
 async const executeFn = ({ query, variables, schema, context }) => {
@@ -139,17 +159,21 @@ async const executeFn = ({ query, variables, schema, context }) => {
 };
 ```
 
-**STEP 3: IMPORT**
+### 3) IMPORT  
 
-Lastly, make sure the main Express/GraphQL server file has the user's GQL schema and context imported in and now you are set to invoke the functions!
+Lastly, make sure the main Express/GraphQL server file has your GQL schema and context imported in.
 
+
+# Getting Started  
+
+Check out the Example folder within the MONARQ repository to see a simple implementation of the package.  
 # Keep in Mind
 
-**1.** The function does not take into account any default parameters that the GQL resolvers may use. If default parameters exist in the resolvers, make sure to add the key `defaultParams` with the value of an object with the keys as the variable names and the value of the default value the resolver uses. See the above example [Manifest Object](#required-user-inputs) for more details.
+**+** If default parameters exist in the resolvers, make sure to add the key `defaultParams` with the value of an object with the keys as the variable names and the value of the default value the resolver uses. See the above example [Manifest Object](#required-user-inputs) for more details.
 
-**2.** We do not support GraphQL Subscription Types at this time.
+**+** GraphQL Subscription Type is not supported at this time.
 
-**3.** We only support the main 5 HTTP REST Methods: Get, Post, Put, Patch, Delete. Any other method passed in will throw an error.
+**+** MONARQ currently supports the 5 main HTTP REST Methods (Get, Post, Put, Patch, Delete). Any other method passed in will throw an error.
 
 # Contributors
 
