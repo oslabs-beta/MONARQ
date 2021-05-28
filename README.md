@@ -135,13 +135,13 @@ async const executeFn = ({ query, variables, schema, context }) => {
         null,
         context,
         variables
-    )
-}
+    );
+};
 ```
 
 **STEP 3: IMPORT**
 
-Lastly, make sure the main Express/GraphQL server file has schema and context imported in and now you are set to invoke the functions!
+Lastly, make sure the main Express/GraphQL server file has the user's GQL schema and context imported in and now you are set to invoke the functions!
 
 # Keep in Mind
 
@@ -159,4 +159,4 @@ Lastly, make sure the main Express/GraphQL server file has schema and context im
 
 [Tyler Kneidl]() [@tylerkneidl](https://github.com/tylerkneidl)
 
-[Helen Regula]() [@helenregula](https://github.com/helenregula)
+[Helen Regula](https://www.linkedin.com/in/helen-regula/) [@helenregula](https://github.com/helenregula)
