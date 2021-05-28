@@ -2,13 +2,16 @@
 ***** ARGS & QUERY OBJECT OUTPUT FUNCTION ***************
 ********************************************************/
 
-// PARAMETER -> manifest: the manifest object created by the user, which contains REST endpoints and corresponding GraphQL operations 
-// PARAMETER -> schema: the schema that contains all relevant GraphQL operations and types, including those specified in the manifest; must be a GraphQLSchema object
-// PARAMETER (optional) -> customScalars: an array containing all custom scalar types that exist in the schema argument; each element should be a custom scalar type and in string format (e.g., ['Month', 'Year'])
-  // if no custom scalar types are used in the schema, then do not pass an argument for this parameter
-// RETURNS -> An object containing the two keys below. This is an input into the routerCreation function.
+/**
+ * 
+ * @param {*} manifest: the manifest object created by the user, which contains REST endpoints and corresponding GraphQL operations
+ * @param {*} schema: the schema that contains all relevant GraphQL operations and types, including those specified in the manifest; must be a GraphQLSchema object
+ * @param {*} customScalars: an array containing all custom scalar types that exist in the schema argument; each element should be a custom scalar type and in string format (e.g., ['Month', 'Year'])
+  // if no custom scalar types are used in the schema, then do not pass an argument for this parameter 
+ * @returns: an object containing the two keys below; this is an input into the routerCreation function.
   // args: an object composed of key-value pairs for any operations (keys) that have argument inputs (values); note that operations without argument inputs will not be included here 
-  // queries: an object composed of key-value pairs for all operations (keys) specified in the manifest and the corresponding GraphQL schema (values) to be invoked
+  // queries: an object composed of key-value pairs for all operations (keys) specified in the manifest and the corresponding GraphQL schema (values) to be invoked 
+ */
 
 const queryMap = (manifest, schema, customScalars = []) => {
   if(typeof manifest !== 'object') throw new Error('manifest argument must an object');
@@ -44,11 +47,15 @@ const queryMap = (manifest, schema, customScalars = []) => {
 ***** QUERY GENERATOR FUNCTION ****
 **********************************/
 // This is invoked within queryMap; can also be used to generate the GraphQL fully expanded query string for any single operation
-// PARAMETER -> schema: same schema that is passed into queryMap 
-// PARAMETER -> operation: a GraphQL operation that has been mapped to a REST endpoint within the manifest object
-// PARAMETER -> scalarTypes: an array containing all standard scalar types as well as any custom scalar types that have been declared in the schema (scalarTypes is declared in queryMap and this is a pass-through parameter)
-// RETURNS -> A string comprising the GraphQL query that corresponds to the operation argument; this query will be passed to the GraphQL server each time a request is made to the corresponding REST endpoint
-  // The query string includes all relevant parts: operation type, variables specification, operation name, arguments specification, fields specification (all available fields are requested)
+
+/**
+ * 
+ * @param {*} schema: same schema that is passed into queryMap 
+ * @param {*} operation: a GraphQL operation that has been mapped to a REST endpoint within the manifest object
+ * @param {*} scalarTypes: an array containing all standard scalar types as well as any custom scalar types that have been declared in the schema (scalarTypes is declared in queryMap and this is a pass-through parameter)
+ * @returns: a string comprising the GraphQL query that corresponds to the operation argument; this query will be passed to the GraphQL server each time a request is made to the corresponding REST endpoint
+  // The query string includes whichever parts are relevant to the operation, including the operation type, variables specification, operation name, arguments specification, fields specification (all available fields are requested)
+ */
 
 const generateQuery = (schema, operation, scalarTypes) => {
   //  determine whether it is a query or mutation
@@ -95,7 +102,7 @@ const generateQuery = (schema, operation, scalarTypes) => {
 
 
 /************************** 
-***** HELPER FUNCTIONS ****
+***** ADDITIONAL FUNCTIONS 
 ***************************/
 
 /* determines whether the operation is a query or mutation */

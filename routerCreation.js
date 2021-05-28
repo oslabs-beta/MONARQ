@@ -161,7 +161,6 @@ const addRoutes = (
                 
                 // Security check to ensure the variables passed into the GraphQL API will only contain the required variables for that query/mutation.
                 const variables = populateVariables(argsForQuery, defaultParams, possibleInputs);
-                
 
               // Checking if context is a function or an object. Then adds the req.headers to the newContext object so the resolvers have access to the headers. It will be saved under the key 'headers'.
                 let newContext;
@@ -187,11 +186,10 @@ const addRoutes = (
 
                 // Execute the function that will return the response from the GraphQL API.
                 const response = await executeFn(executeObj);
-
-                // If the errors field exists in the response object, client will be notified and the error will log to the console.
+          
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server');
-                    console.warn(`${response.errors}`);
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
+                    console.warn(`${response.errors}`)
                     return;
                 }
 
@@ -250,8 +248,8 @@ const addRoutes = (
 
                 // If the errors field exists in the response object, client will be notified and the error will log to the console.
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server');
-                    console.warn(`${response.errors}`);
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
+                    console.warn(`${response.errors}`)
                     return;
                 }
 
@@ -310,8 +308,8 @@ const addRoutes = (
 
                 // If the errors field exists in the response object, client will be notified and the error will log to the console.
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server');
-                    console.warn(`${response.errors}`);
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
+                    console.warn(`${response.errors}`)
                     return;
                 }
 
@@ -370,8 +368,8 @@ const addRoutes = (
 
                 // If the errors field exists in the response object, client will be notified and the error will log to the console.
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server');
-                    console.warn(`${response.errors}`);
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
+                    console.warn(`${response.errors}`)
                     return;
                 }
 
@@ -430,8 +428,8 @@ const addRoutes = (
 
                 // If the errors field exists in the response object, client will be notified and the error will log to the console.
                 if (response.errors) {
-                    res.status(500).json('Issue Executing Request, Please Check Documentation on How to send Request to Server');
-                    console.warn(`${response.errors}`);
+                    res.status(500).json(`Issue Executing Request: ${response.errors[0].message}`)
+                    console.warn(`${response.errors}`)
                     return;
                 }
 
