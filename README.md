@@ -20,10 +20,10 @@ import { queryMap, routerCreation } from "monarq";
 
 There are two main functions that need to be invoked within your main Express/GraphQL server file.
 
-**Step 1:** `queryMap` is a function that will take a [Manifest Object](#required-user-inputs) and schema and return an object with created query/ mutation strings. `queryMap` takes two inputs:
+**Step 1:** `queryMap` is a function that will take a [Manifest Object](#required-user-inputs) and GQL schema and return an object with created query/ mutation strings. `queryMap` takes two inputs:
 
 - A [Manifest Object](#required-user-inputs)
-- User's schema as a GQLSchema.
+- User's schema as a GQL Schema.
 
 Invoke this function in your main Express/GraphQL server file and save the result as a variable.
 
@@ -63,7 +63,7 @@ That's it!
 
 ## Required User Inputs
 
-**MONARQ** allows our users to define the REST Endpoints that they want to open to the public. Simply create a 'Manifest' object in a seperate file and import into your server file. You can also visit **MONARQ**'s website at [insert website here]() and easily create the manifest object there.
+**MONARQ** allows our users to define the REST Endpoints that they want to open to the public. Simply create a 'Manifest' object in a seperate file and import into your server file. You can also visit **MONARQ**'s [website](link_for_website) and easily create the manifest object there.
 
 **STEP 1: DEFINE MANIFEST OBJECT**
 The Manifest Object should be in a specific format as follows:
