@@ -100,10 +100,12 @@ async function executeFn ({ query, variables, schema, context }){
 
 // STEP 3
 // Invoke the routerCreation function to create a new express router that will handle all REST requests
+// For this example, context has been declared as an empty object because it is a required argument for routerCreation. However, your context argument will likely already exist and be populated with data (e.g., related to the database)
 const context = {};
+
 const apiRouter = routerCreation(manifest, createdQuery, {
-  context,
-  schema, 
+  schema,
+  context, 
   executeFn 
 });
 
