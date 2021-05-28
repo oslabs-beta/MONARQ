@@ -112,8 +112,6 @@ const populateVariables = (requiredVariables, defaultParams, reqObj) => {
     
     Object.keys(requiredVariables).forEach(key => {
         const keyTrim = key.slice(1, key.length)
-        console.log('keyTrim', keyTrim)
-        console.log('in the outer loop')
         Object.keys(reqObj).forEach(keyMatch => {
             if (key === `$${keyMatch}`){
                 variables[keyMatch] = reqObj[keyMatch];
