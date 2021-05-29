@@ -53,7 +53,7 @@ const createdQuery = queryMap(manifest, schema, ['Date']);
 ```
 
 ### Step 2:
-`routerCreation` returns an express.Router instance contains route handlers for each of the API Paths defined within the [Manifest Object](#required-user-inputs).  `routerCreation` takes three arguments:
+`routerCreation` returns an express.Router instance containing route handlers for each of the API Paths defined within the [Manifest Object](#required-user-inputs).  `routerCreation` takes three arguments:
 
 - [Manifest Object](#required-user-inputs)
 - `createdQuery` (the saved value from invoking the queryMap function)
