@@ -177,10 +177,10 @@ Check out the Example folder within the MONARQ repository to see a simple implem
 
 # Contributors
 
-[Peter Baniuszewicz]() [@Peter-Ba](https://github.com/Peter-Ba)
+[Peter Baniuszewicz](https://www.linkedin.com/in/peterbaniuszewicz/) [@Peter-Ba](https://github.com/Peter-Ba)
 
-[Amy Chen]() [@designal46](https://github.com/designal46)
+[Amy Chen](https://www.linkedin.com/in/amyechen) [@designal46](https://github.com/designal46)
 
-[Tyler Kneidl]() [@tylerkneidl](https://github.com/tylerkneidl)
+[Tyler Kneidl](https://www.linkedin.com/in/tylerkneidl/) [@tylerkneidl](https://github.com/tylerkneidl)
 
 [Helen Regula](https://www.linkedin.com/in/helen-regula/) [@helenregula](https://github.com/helenregula)
