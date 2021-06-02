@@ -102,7 +102,7 @@ describe('routerCreation Function Test', () => {
         .get('/bad/working')
         .then((response) => {
           expect(response.body).toEqual(
-            'Issue Executing Request, Please Check Documentation on How to send Request to Server',
+            'Issue Executing Request: undefined',
           );
           done();
         })
