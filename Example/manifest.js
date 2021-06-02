@@ -1,21 +1,21 @@
 const manifest = {
   endpoints: {
-    '/book/:id':{
-      get:{
-        operation: 'getBook'
-      }
+    '/book/:id': {
+      get: {
+        operation: 'getBook',
+      },
     },
     '/books': {
       post: {
-        operation: 'createBook'
-      }
+        operation: 'createBook',
+      },
     },
     '/authors': {
       post: {
-        operation: 'createAuthor'
-      }
-    }
-  }
-}
+        operation: 'createAuthor',
+      },
+    },
+  },
+};
 
-module.exports = { manifest }
+module.exports = { manifest };
