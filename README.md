@@ -84,7 +84,7 @@ That's it! Your application is now ready to accept both GraphQL and REST request
 
 Before implementing `queryMap` and `routerCreation`, you will have to define the REST endpoints that you want to expose. Each REST endpoint will be mapped to a GraphQL operation, thus allowing the client to send REST requests and you to handle those requests with your GraphQL server. **MONARQ** gives you the flexibility to define as many or as few REST endpoints as you want to expose.     
 
-Create a manifest object in a file and import into your server file. You can also visit **MONARQ**'s [website](link_for_website) to create the manifest object using a simple visual interface.
+Create a manifest object in a file and import into your server file. You can also visit **MONARQ**'s [website](http://monarq.io/) to create the manifest object using a simple visual interface.
 
 ### 1) DEFINE MANIFEST OBJECT    
 
@@ -92,27 +92,24 @@ The Manifest Object must be in a specific format as shown in the following examp
 
 ```javascript
 const manifest = {
-    endpoints:{
-        '/book/:id': {
-            get: {
-                operation: 'book'
-            },
-            post {
-                operation: 'updateBook'
-            }
-        },
-        '/books': {
-            get: {
-                operation: 'books'
-                defaultParams: {
-                    pageSize: 20,
-                    page: 1
-                }
-            }
-        }
-    }
-
-}
+  endpoints: {
+    '/book/:id': {
+      get: {
+        operation: 'getBook',
+      },
+    },
+    '/books': {
+      post: {
+        operation: 'createBook',
+      },
+    },
+    '/authors': {
+      post: {
+        operation: 'createAuthor',
+      },
+    },
+  },
+};
 ```
 
 This Manifest Object is a required input into both `queryMap` and `routerCreation`. Each manifest object will contain:  
@@ -148,15 +145,11 @@ _Example_
 In this case, the native graphql method from graphql.js is used to execute queries.  
 
 ```javascript
-async const executeFn = ({ query, variables, schema, context }) => {
-    return await graphql(
-        schema,
-        query,
-        null,
-        context,
-        variables
-    );
-};
+async function executeFn({ query, variables, schema, context, }) {
+    const data = await graphql(schema, query, null, context, variables);
+
+    return data || errors;
+}
 ```
 
 ### 3) IMPORT  
@@ -183,4 +176,6 @@ Check out the Example folder within the MONARQ repository to see a simple implem
 
 [Tyler Kneidl](https://www.linkedin.com/in/tylerkneidl/) [@tylerkneidl](https://github.com/tylerkneidl)
 
-[Helen Regula](https://www.linkedin.com/in/helen-regula/) [@helenregula](https://github.com/helenregula)
+[Helen Regula](https://www.linkedin.com/in/helen-regula/) [@helenregula](https://github.com/helenregula)  
+
+Visit the MONARQ [website](http://monarq.io/) for more information
